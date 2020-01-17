@@ -9,7 +9,7 @@ trigger:
 jobs:
 - deployment: DeploymentJob
 
-environment: $(environmentName)
+
 
 
 pool:
@@ -24,6 +24,7 @@ pool:
     Python37:
       python.version: '3.7'
 
+  environment: $(environmentName)
   runOnce:
     deploy:
       steps:
