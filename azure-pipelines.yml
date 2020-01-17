@@ -19,30 +19,41 @@ strategy:
     Python37:
       python.version: '3.7'
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+  runOnce:
+    deploy:
+      steps:
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '$(python.version)'
+        displayName: 'Use Python $(python.version)'
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-  displayName: 'Install dependencies'
+      - script: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        displayName: 'Install dependencies'
 
-- script: |
-    pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'pytest'
+      - script: |
+          pip install pytest pytest-azurepipelines
+          pytest
+        displayName: 'pytest'
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.SourcesDirectory)'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/Application$(Build.BuildId).zip'
-    replaceExistingArchive: true
-    verbose: # (no value); this input is optional
-- publish: $(Build.ArtifactStagingDirectory)/Application$(Build.BuildId).zip
-  displayName: 'Upload package'
-  artifact: drop
+      - task: ArchiveFiles@2
+        inputs:
+          rootFolderOrFile: '$(Build.SourcesDirectory)'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/Application$(Build.BuildId).zip'
+          replaceExistingArchive: true
+          verbose: # (no value); this input is optional
+      - publish: $(Build.ArtifactStagingDirectory)/Application$(Build.BuildId).zip
+        displayName: 'Upload package'
+        artifact: drop
+
+      - task: AzureWebApp@1
+        displayName: 'Deploy Azure Web App : {{ webAppName }}'
+        inputs:
+          azureSubscription: $(azureServiceConnectionId)
+          appType: webAppLinux
+          appName: $(webAppName)
+          package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
+          startUpCommand: 'gunicorn --bind=0.0.0.0 --workers=4 startup:app'
