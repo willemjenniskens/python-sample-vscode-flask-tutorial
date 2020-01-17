@@ -36,4 +36,5 @@ steps:
   displayName: 'pytest'
 
 - task: ArchiveFiles@2
+  inputs:
     rootFolderOrFile: '$(Build.SourcesDirectory)'
