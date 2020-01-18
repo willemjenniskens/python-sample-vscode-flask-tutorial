@@ -45,7 +45,7 @@ steps:
   inputs:
     appType: webAppLinux
     azureSubscription: willemjenniskensRM
-    appName: $(webAppName)
+    appName: willemjenniskens-flaskpipelines
     package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
     startUpCommand: 'gunicorn --bind=0.0.0.0 --workers=4 startup:app'
 
