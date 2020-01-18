@@ -41,5 +41,12 @@ steps:
   displayName: 'Upload package'
   artifact: drop
 
+- task: AzureWebApp@1 # Add this at the end of your file
+  inputs:
+    appType: webAppLinux
+    azureSubscription: $(azureServiceConnectionId)
+    appName: $(webAppName)
+    package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
+    startUpCommand: 'gunicorn --bind=0.0.0.0 --workers=4 startup:app'
 
-
+  
