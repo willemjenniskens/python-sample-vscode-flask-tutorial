@@ -13,7 +13,19 @@ steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
 
+- task: AzureFileCopy@3
+  inputs:
+    sourcePath: startup.txt
+    azureSubscription: cbdcef1f-25b2-4ffa-bde7-3a4bd4ccd1ab
+    destination: azureVMs
+    storage: 
+    resourceGroup: 'OT4-Application-ArcGis'
+    machineNames: 'puhotaps1195'
+
+
 - script: |
     echo Add other tasks to build, test, and deploy your project.
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
+
+
